@@ -38,3 +38,70 @@ def main():
     st.subheader( "Optimize Your Resume for ATS and job matching")
 
 
+    # Input sections with validation
+    jd = st.text_area("Job Description", 
+                      height=200,
+                      placeholder="Paste the job description here",
+                      help="Enter the complete job description here for accurate results"
+                    )
+    uploaded_resume = st.file_uploader(
+        "Upload your resume",
+        type=["pdf"],
+        help="Upload your resume in PDF format")
+    
+    # Process buttom with upload state
+    if st.button("Analyse Resume", disabled=st.session_state.processing):
+        if not jd:
+            st.warning("Please enter the job description")
+            return
+        
+        if not uploaded_resume:
+            st.warning("Please upload the resume")
+            return
+        
+        # Set the processing state to True
+        st.session_state.processing = True 
+
+        try:
+            with st.spinner("Analysing your resume..."):
+
+                # Extract text from pdf 
+                resume_text = read_file(uploaded_resume)
+
+                # Prepare the prompt 
+                prompt = prepare_prompt(resume_text, jd)
+
+                # Get the response from the LLM model 
+                response = get_llm_response(prompt)
+                response_json = json.loads(response)
+
+                # Display the response
+                st.success("Resume analysis completed")
+                left, right = st.columns(2, border=True)
+                # Match Percentage 
+                match_percantage = response_json.get("JD_Match", "N/A")
+                left.metric("Match Percentage", match_percantage)
+
+                # Skills Match
+                skills_percentage = response_json.get("Skills_Match", "N/A")
+                right.metric("Match Percentage", match_percantage)
+
+                # Top Skills 
+                st.subheader("Top Skills Match")
+                top_skills = response_json.get("Top Skills", [])
+
+                if top_skills:
+                    st.write(",".join(top_skills))
+                else:
+                    st.write("No top skills found")
+
+                # Missing Keywords    
+                st.subheader("Missing Keywords")
+                missing_keywords = response_json.get("Missing Keywords", [])
+
+                if top_skills:
+                    st.write(",".join(top_skills))
+                else:
+                    st.write("No top skills found")
+
+                
