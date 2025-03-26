@@ -21,4 +21,21 @@ def prepare_prompt(resume_txt, jd_txt):
 
     Job Description:
     {jd_txt}
+
+    Provide a response in the following JSON format:
+
+    {{
+        "JD_Match" : "Percentage between 0-100",
+        "Skills_Match" : "Percentage between 0-100",
+        "Top Skills" : ["list of top skills"],
+        "Missing Keywords" : ["list of missing keywords"],
+        "Profile Summary" : "Summary of the profile and how it matches the job description"
+        "Recommendations" : "Recommendations for the candidate"
+    }}
+
     """
+
+    return prompt_template.format(
+        resume_txt=resume_txt.strip(),
+        jd_txt=jd_txt.strip()
+    )
