@@ -14,7 +14,6 @@ def init_session_state():
     if 'processing' not in st.session_state:
         st.session_state.processing = False
 
-
 def main():
     # Initialize the session state
     init_session_state()
@@ -104,4 +103,19 @@ def main():
                 else:
                     st.write("No top skills found")
 
-                
+                # Profile Summary 
+                st.subheader("Profile Summary")
+                st.write(response_json.get("Profile Summary", "N/A"))
+
+                # Recommendations
+                st.subheader("Recommendations")
+                st.write(response_json.get("Recommendations", "N/A"))
+        
+        except Exception as e:
+            st.error(f"An error occured while Resume generation: {str(e)}")
+
+        finally:
+            st.session_state.processing = False 
+
+if __name__ == "__main__":
+    main()
